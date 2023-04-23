@@ -9,6 +9,8 @@ jobs:
   build:
       name: Build and upload crank artifact
       runs-on: ubuntu-latest    
+      permissions:
+        contents: write
       strategy:
         matrix:
           targets: [ "linux-x64", "win-x64"]
