@@ -2,29 +2,20 @@ name: cw-crank
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "cw-crank.*"
 
 jobs:
   build:
       name: Build and upload crank artifact
       runs-on: ubuntu-latest    
       strategy:
-          matrix:
-              targets:
-                  [
-                      "linux-x64",
-                      "linux-musl-x64",
-                      "linux-arm",
-                      "linux-arm64",
-                      "osx-x64",
-                      "win-x86",
-                      "win-arm",
-                      "win-x64",
-                      "win-arm64"
-                  ]
+        matrix:
+          targets: [ "linux-x64", "win-x64"]
 
-    steps:
+      steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
@@ -34,25 +25,25 @@ jobs:
         env:
               RID: ${{ matrix.targets }}
         run: |
-          git clone https://github.com/catcherwong/crank
-
+          git clone https://github.com/catcherwong/crank.git
+          cd crank
           git checkout main
 
-          dotnet publish crank/src/Microsoft.Crank.Controller/Microsoft.Crank.Controller.csproj -c Release -r $RID -p:PublishSingleFile=true -p:PublishTrimmed=true -p:DebugType=None -p:DebugSymbols=false -p:EnableCompressionInSingleFile=true --self-contained true --output /home/runner/work/clis/$RID
+          dotnet publish src/Microsoft.Crank.Controller/Microsoft.Crank.Controller.csproj -c Release --framework net7.0 -r $RID -p:PublishSingleFile=true -p:PublishTrimmed=true -p:DebugType=None -p:DebugSymbols=false -p:EnableCompressionInSingleFile=true --self-contained true --output /home/runner/work/clis/$RID
 
       - name: Package assets
-          env:
-              RID: ${{ matrix.targets }}
-          run: |
+        env:
+            RID: ${{ matrix.targets }}
+        run: |
               ver=$(date "+%Y%m%d%H%M%S")
               mkdir /home/runner/work/release
               ls /home/runner/work/clis/
-              zip -j /home/runner/work/release/cw-crank.$VERSION.$RID.zip /home/runner/work/clis/$RID/*
-        - name: Upload artifacts
-          uses: actions/upload-artifact@v3
-          with:
-              name: cw-crank
-              path: /home/runner/work/release
+              zip -j /home/runner/work/release/cw-crank.$ver.$RID.zip /home/runner/work/clis/$RID/*
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+            name: cw-crank
+            path: /home/runner/work/release
 
   release:
         name: Publish release
@@ -64,6 +55,7 @@ jobs:
             uses: actions/download-artifact@v3
             with:
               name: cw-crank
+              path: cw-crank
           - name: list cw-crank
             run: ls cw-crank    
           - name: Release

@@ -3,7 +3,7 @@ name: cw-crank-agent
 on:
   push:
     branches:
-      - main
+      - cw-crank-agent
 
 env:
   IMAGE_NAME: crankagent_cw
@@ -11,6 +11,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest          
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -24,11 +27,9 @@ jobs:
 
       - name:  Publish
         run: |
-          git clone https://github.com/catcherwong/crank
-
-          git checkout main
-
+          git clone https://github.com/catcherwong/crank.git
           cd  crank
+          git checkout all
 
           ver=$(date "+%Y%m%d%H%M%S")
           docker build -t ghcr.io/catcherwong/crankagent_cw:$ver -f docker/agent/Dockerfile .
