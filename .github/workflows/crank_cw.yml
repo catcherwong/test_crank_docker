@@ -8,9 +8,7 @@ on:
 jobs:
   build:
       name: Build and upload crank artifact
-      runs-on: ubuntu-latest    
-      permissions:
-        contents: write
+      runs-on: ubuntu-latest
       strategy:
         matrix:
           targets: [ "linux-x64", "win-x64"]
@@ -29,7 +27,7 @@ jobs:
         run: |
           git clone https://github.com/catcherwong/crank.git
           cd crank
-          git checkout main
+          git checkout all
 
           dotnet publish src/Microsoft.Crank.Controller/Microsoft.Crank.Controller.csproj -c Release --framework net7.0 -r $RID -p:PublishSingleFile=true -p:PublishTrimmed=true -p:DebugType=None -p:DebugSymbols=false -p:EnableCompressionInSingleFile=true --self-contained true --output /home/runner/work/clis/$RID
 
@@ -51,7 +49,8 @@ jobs:
         name: Publish release
         needs: ['build']
         runs-on: ubuntu-latest
-    
+        permissions:
+          contents: write
         steps:          
           - name: Download build artifacts
             uses: actions/download-artifact@v3
