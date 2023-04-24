@@ -29,7 +29,7 @@ jobs:
           cd crank
           git checkout all
 
-          dotnet publish src/Microsoft.Crank.Controller/Microsoft.Crank.Controller.csproj -c Release --framework net7.0 -r $RID -p:PublishSingleFile=true -p:PublishTrimmed=true -p:DebugType=None -p:DebugSymbols=false -p:EnableCompressionInSingleFile=true --self-contained true --output /home/runner/work/clis/$RID
+          dotnet publish src/Microsoft.Crank.Controller/Microsoft.Crank.Controller.csproj -c Release --framework net7.0 -r $RID -p:PublishSingleFile=true -p:DebugType=None -p:DebugSymbols=false -p:EnableCompressionInSingleFile=true --self-contained true --output /home/runner/work/clis/$RID
 
       - name: Package assets
         env:
