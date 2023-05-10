@@ -30,6 +30,7 @@ jobs:
           git clone https://github.com/catcherwong/crank.git
           cd  crank
           git checkout all
+          
 
           ver=$(date "+%Y%m%d%H%M%S")
           docker build -t ghcr.io/catcherwong/crankagent_cw:$ver -f docker/agent/Dockerfile .
