@@ -28,6 +28,7 @@ jobs:
           cd  crank
           git checkout main
           
+          
           ver=$(date "+%Y%m%d%H%M%S")
           docker build -t ghcr.io/catcherwong/crankagent_dotnet:$ver -f docker/agent/Dockerfile .
 
